@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"eventbus:latest","namespace":"dhbw-co2ampel"},"fieldPath":"spec.template.spec.containers[?(@.name==\"eventbus\")].image","pause":"false"}]'
+    app.openshift.io/connects-to: '[{"apiVersion":"apps/v1","kind":"Deployment","name":"receivedata"},{"apiVersion":"apps/v1","kind":"Deployment","name":"displaydata"}]'
+  labels:
+    app: eventbus
+    app.kubernetes.io/component: eventbus
+    app.kubernetes.io/instance: eventbus
+    app.kubernetes.io/part-of: dhbw-co2ampel
+    app.openshift.io/runtime: nodejs
+  name: eventbus
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: eventbus
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: eventbus
+        deploymentconfig: eventbus
+    spec:
+      containers:
+      - image: replace/me/eventbus:latest
+        imagePullPolicy: Always
+        name: eventbus
+        ports:
+        - containerPort: 4005
+          protocol: TCP
+        resources: 
+          envFrom:
+          - configMapRef:
+            name: settings
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        livenessProbe:
+          httpGet:
+            path: /eventbus
+            port: 4005
+          initialDelaySeconds: 3
+          periodSeconds: 5
+          failureThreshold: 3
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30

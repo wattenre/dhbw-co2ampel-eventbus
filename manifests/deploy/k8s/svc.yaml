@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: eventbus
+    app.kubernetes.io/component: eventbus
+    app.kubernetes.io/instance: eventbus
+    app.kubernetes.io/part-of: dhbw-co2ampel
+  name: eventbus
+spec:
+  ports:
+  - name: 4005-tcp
+    port: 4005
+    protocol: TCP
+    targetPort: 4005
+  selector:
+    app: eventbus
+    deploymentconfig: eventbus
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

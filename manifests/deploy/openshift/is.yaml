@@ -1,0 +1,21 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  labels:
+    app: eventbus
+    app.kubernetes.io/component: eventbus
+    app.kubernetes.io/instance: eventbus
+    app.kubernetes.io/part-of: dhbw-co2ampel
+  name: eventbus
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - from:
+      kind: DockerImage
+      name: replace/me/eventbus:latest
+    importPolicy:
+      scheduled: true
+    name: latest
+    referencePolicy:
+      type: Source

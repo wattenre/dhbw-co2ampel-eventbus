@@ -1,0 +1,14 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: eventbus
+spec:
+  rules:
+    - host: eventbus-dhbw-co2ampel.2886795283-80-kota02.environments.katacoda.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              serviceName: eventbus
+              servicePort: 4005
